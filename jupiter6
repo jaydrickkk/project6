@@ -1,0 +1,89 @@
+import pygame
+import random
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Constants
+WIDTH, HEIGHT = 800, 600
+FPS = 60
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+
+# Initialize screen
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Math Game for Kids")
+
+# Fonts
+font_big = pygame.font.Font(None, 80)
+font_small = pygame.font.Font(None, 36)
+
+# Clock to control the frame rate
+clock = pygame.time.Clock()
+
+def generate_question():
+    num1 = random.randint(1, 5)
+    num2 = random.randint(1, 5)
+    operator = random.choice(['+', '-'])
+    question = f"{num1} {operator} {num2}"
+    return question, eval(question)
+
+def display_question(question):
+    question_text = font_big.render(f"{question} =", True, BLACK)
+    screen.blit(question_text, (WIDTH // 4, HEIGHT // 4))
+
+def display_score(score):
+    score_text = font_small.render(f"Score: {score}", True, BLACK)
+    screen.blit(score_text, (10, 10))
+
+def display_result(result):
+    result_text = font_small.render(result, True, RED)
+    screen.blit(result_text, (WIDTH // 4, HEIGHT // 2))
+
+def main():
+    global question, answer, score, result
+
+    score = 0
+    result = ""
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        screen.fill(WHITE)
+
+        if result == "":
+            question, answer = generate_question()
+            display_question(question)
+
+        display_score(score)
+        display_result(result)
+
+        keys = pygame.key.get_pressed()
+        for key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5]:
+            if keys[key]:
+                user_answer = int(pygame.key.name(key))
+                if user_answer == answer:
+                    result = "Correct! Well done!"
+                    score += 1
+                else:
+                    result = "Incorrect. Try again!"
+
+        pygame.display.flip()
+
+        # Reset the game after 2 seconds
+        pygame.time.delay(2000)
+        result = ""
+
+        # Set the frame rate
+        clock.tick(FPS)
+
+if __name__ == "__main__":
+    main()
